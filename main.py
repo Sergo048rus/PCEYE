@@ -4,13 +4,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy.lib.function_base import sinc
 import scipy.signal as s
-import math
 import os
-import sys
 from scipy.spatial import distance
 from scipy.ndimage import gaussian_filter
 
-# np.set_printoptions(threshold=sys.maxsize)
+
 
 os.system('cls')
 # 0. Параметры:
@@ -20,18 +18,6 @@ IMG_FILE =  "image1.png"
 PIXEL_SIZE_MM = 1.7 * 1.7 * 10 ** -3
 DISTANCE_MM = 200
 FOCUS_MM = 5
-# LowPassCore = np.array(
-#     [
-#         [1, 1, 1, 1, 1, 1, 1],
-#         [1, 2, 2, 2, 2, 2, 1],
-#         [1, 2, 3, 3, 3, 2, 1],
-#         [1, 2, 3, 4, 3, 2, 1],
-#         [1, 2, 3, 3, 3, 2, 1],
-#         [1, 2, 2, 2, 2, 2, 1],
-#         [1, 1, 1, 1, 1, 1, 1]
-#     ]
-# )
-# LowPassCore = LowPassCore/np.sum(np.sum(LowPassCore))
 
 
 def LP_filter(x, y):
@@ -53,25 +39,12 @@ result = gaussian_filter(imgi, sigma=2)
 (thresh, result) = cv2.threshold(result, 107, 255, cv2.THRESH_BINARY)
 plt.imshow(result)
 imgi = result
-# # 2.1 ФНЧ
-# a = 1
-# n = 51
-# x = np.linspace(-a, a, n)
-# y = np.linspace(-a, a, n)
-# LowPassCore = LP_filter(x[:, None], y[None, :])
-# print('Изображение фильтруется с помощью ФНЧ', n, 'x', n)
-# # imgi = np.array(s.convolve2d(np.double(imgi), LowPassCore,
-# #                 mode='same', boundary='wrap'))
-# imgi = s.fftconvolve(np.double(imgi), LowPassCore, mode='same')
-# imgi = 255 * (imgi/imgi.max())
-# # imgi = cv2.GaussianBlur(imgi, (n, n), 0)
+
 fig_ = plt.figure('Бинаризация')
 plt.imshow(imgi, cmap='gray', vmin=np.min(0), vmax=np.max(imgi))
 plt.draw()
 plt.show(block=False)
-# fig = plt.figure('11')
-# fig.canvas.draw()
-# fig.canvas.flush_events()
+
 
 # 3. Формируем ядра свертки для поиска точек:
 hsize = 30
@@ -102,8 +75,7 @@ h[:, centr-width:centr+width] = 1
 
 p = []
 print('Производится двумерная свёртка с окном "звезда"', hsize, 'x', hsize)
-# imgo = np.array(s.convolve2d(np.double(imgi), np.flip(h),
-#                              mode='same', boundary='wrap'))
+
 imgo = s.fftconvolve(np.double(imgi), h, mode='same')
 imgo = 255 * (imgo / imgo.max())
 imgo[imgo < 0] = 0
@@ -126,8 +98,7 @@ for y in range(hsize):
             h[x][y] = 1
 
 print('Производится двумерная свёртка с окном "круг"', hsize, 'x', hsize)
-# imgo = np.array(s.convolve2d(np.double(imgi), np.flip(h),
-#                              mode='same', boundary='wrap'))
+
 imgo = s.fftconvolve(np.double(imgo), h, mode='same')
 imgo = 255 * (imgo / imgo.max())
 imgo[imgo < 0] = 0
@@ -138,7 +109,6 @@ plt.draw()
 plt.show(block=False)
 fig2.canvas.draw()
 fig2.canvas.flush_events()
-
 
 
 hsize = 40
@@ -152,8 +122,7 @@ for y in range(hsize):
             h[x][y] = 1
 
 print('Производится двумерная свёртка с окном "круг"', hsize, 'x', hsize)
-# imgo = np.array(s.convolve2d(np.double(imgi), np.flip(h),
-#                              mode='same', boundary='wrap'))
+
 imgo = s.fftconvolve(np.double(imgo), h, mode='same')
 imgo = 255 * (imgo / imgo.max())
 imgo[imgo < 0] = 0
@@ -178,8 +147,7 @@ for y in range(hsize):
             h[x][y] = 1
 
 print('Производится двумерная свёртка с окном "круг"', hsize, 'x', hsize)
-# imgo = np.array(s.convolve2d(np.double(imgi), np.flip(h),
-#                              mode='same', boundary='wrap'))
+
 imgo = s.fftconvolve(np.double(imgo), h, mode='same')
 imgo = 255 * (imgo / imgo.max())
 imgo[imgo < 0] = 0
@@ -199,10 +167,8 @@ h[(hsize-1)//2, (hsize-1)//2] = 255
 
 
 
-
 print('Производится двумерная свёртка с окном "точка"', hsize, 'x', hsize)
-# imgo = np.array(s.convolve2d(np.double(imgi), np.flip(h),
-#                              mode='same', boundary='wrap'))
+
 imgo = s.fftconvolve(np.double(imgo), h, mode='same')
 imgo = 255 * (imgo / imgo.max())
 imgo[imgo < 0] = 0
@@ -257,36 +223,5 @@ for i in range(len(points)):
 print(f'\nПолная длина равна: {SUM_res}мм')
 
 
-
-
-
-
-
-
-
-
-# len0to2 = np.sqrt((points[0][0] - points[2][0]) **
-#                   2 + (points[0][1] - points[2][1])**2)
-
-# len2to5 = np.sqrt((points[2][0] - points[5][0]) **
-#                   2 + (points[2][1] - points[5][1])**2)
-
-# len5to3 = np.sqrt((points[5][0] - points[3][0]) **
-#                   2 + (points[5][1] - points[3][1])**2)
-
-# len3to1 = np.sqrt((points[3][0] - points[1][0]) **
-#                   2 + (points[3][1] - points[1][1])**2)
-
-# len1to4 = np.sqrt((points[1][0] - points[4][0]) **
-#                   2 + (points[1][1] - points[4][1])**2)
-
-# len4to6 = np.sqrt((points[4][0] - points[6][0]) **
-#                   2 + (points[4][1] - points[6][1])**2)
-
-# resultLength = len0to2+len2to5+len5to3+len3to1+len1to4+len4to6
-# resultLength_mm = (resultLength * PIXEL_SIZE_MM) * DISTANCE_MM / FOCUS_MM
-
-# print('\nДлина пути в пикселях:', resultLength)
-# print('Длина пути в мм:', resultLength_mm)
 
 input("\nPress ENTER...")
